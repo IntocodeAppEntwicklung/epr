@@ -1,46 +1,17 @@
-import "bootstrap/dist/css/bootstrap.min.css";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import { RecipesContext } from "./RecipeContext";
+import { useContext } from "react";
 import { BsClock, BsStar, BsStarFill, BsTrash } from "react-icons/bs";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "./RecipeList.css";
+
 function RecipeList() {
-  // State Hooks
-  // Wird verwendet, um Details eines Rezepts zu erweitern. Aktuell nicht in Gebrauch.
-  const [expandedId] = useState(null);
-  // Navigations-Hook von react-router-dom.
+  const { recipes, handleToggleFavorite, handleDeleteRecipe } =
+    useContext(RecipesContext);
+  const [filterFavorites, setFilterFavorites, expandedId] = useState(false);
   const navigate = useNavigate();
-  // State, um zu tracken, ob der Favoriten-Filter aktiv ist.
-  const [filterFavorites, setFilterFavorites] = useState(false);
-  // State, der die Rezepte speichert.
-  // Dummy-Daten, bitte mit der richtigen Funktion ersetzen
-  const [recipes, setRecipes] = useState([
-    {
-      id: 1,
-      title: "Spaghetti Bolognese",
-      instructions: "Delicious Italian pasta.",
-      calories: "200kcal",
-      time: "30 min",
-    },
-    {
-      id: 2,
-      title: "Spaghetti Bolognese",
-      instructions: "Delicious Italian pasta.",
-      calories: "200kcal",
-      time: "30 min",
-    },
-    {
-      id: 3,
-      title: "Spaghetti Bolognese",
-      instructions:
-        "Delicious Italian pasta.Delicious Italian pasta.Delicious Italian pasta.Delicious Italian pasta.Delicious Italian pasta.Delicious Italian pasta.Delicious Italian pasta.Delicious Italian pasta.Delicious Italian pasta.Delicious Italian pasta.Delicious Italian pasta.Delicious Italian pasta.",
-      calories: "200kcal",
-      time: "30 min",
-    },
-
-    // ...weitere Rezeptdaten
-  ]);
-
   // Funktion, um zur Detailseite eines Rezepts zu navigieren.
   const handleReadMoreClick = (id) => {
     navigate(`/recipe-details/${id}`);
@@ -51,28 +22,18 @@ function RecipeList() {
     setFilterFavorites(!filterFavorites);
   };
 
+  const handleToggle = (id) => {
+    handleToggleFavorite(id);
+  };
+
+  const handleDelete = (id) => {
+    handleDeleteRecipe(id);
+  };
+
   // Filtert die Rezepte basierend darauf, ob der Favoriten-Filter aktiv ist.
   const filteredRecipes = filterFavorites
     ? recipes.filter((recipe) => recipe.isFavorite)
     : recipes;
-
-  // Schaltet den Favoritenstatus eines Rezepts um.
-  const toggleFavorite = (id) => {
-    setRecipes(
-      recipes.map((recipe) => {
-        if (recipe.id === id) {
-          return { ...recipe, isFavorite: !recipe.isFavorite };
-        }
-        return recipe;
-      })
-    );
-  };
-
-  // Löscht ein Rezept aus der Liste.
-  const handleDeleteRecipe = (idToDelete) => {
-    const updatedRecipes = recipes.filter((recipe) => recipe.id !== idToDelete);
-    setRecipes(updatedRecipes);
-  };
 
   return (
     <>
@@ -127,15 +88,15 @@ function RecipeList() {
                 <div className="card h-100 d-flex flex-column">
                   <div className="card-body d-flex flex-column">
                     <div className="mt-auto d-flex justify-content-between align-items-center">
-                      <h5 className="card-title">{recipe.title}</h5>
+                      <h5 className="card-title">{recipe.name}</h5>
                       <i className="bi bi-star-fill mr-2"></i>
                       {recipe.isFavorite ? (
                         <BsStarFill
                           className="text-warning"
-                          onClick={() => toggleFavorite(recipe.id)}
+                          onClick={() => handleToggle(recipe.id)}
                         />
                       ) : (
-                        <BsStar onClick={() => toggleFavorite(recipe.id)} />
+                        <BsStar onClick={() => handleToggle(recipe.id)} />
                       )}
                     </div>
                     <p className="card-text flex-grow-1 mb-3">
@@ -146,10 +107,12 @@ function RecipeList() {
                     <div className="d-flex justify-content-between align-items-center mt-3">
                       <div className="d-flex align-items-center">
                         <BsClock className="icon-spacing" />{" "}
-                        <span className="time-spacing">{recipe.time}</span>
+                        <span className="time-spacing">
+                          {recipe.totalCookingTimeMinutes}
+                        </span>
                       </div>
                       <div className="d-flex align-items-center">
-                        {recipe.calories} /100g
+                        {recipe.calories100g} /100g
                       </div>
                     </div>
                     <div className="d-flex justify-content-between align-items-center mt-3">
@@ -161,7 +124,7 @@ function RecipeList() {
                       </button>
                       <BsTrash
                         className="delete-icon"
-                        onClick={() => handleDeleteRecipe(recipe.id)}
+                        onClick={() => handleDelete(recipe.id)}
                       />
                     </div>
                   </div>
