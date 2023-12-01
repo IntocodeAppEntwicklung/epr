@@ -1,5 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
-import { fetchRecipes, toggleFavorite, deleteRecipe } from "./api"; // Stellen Sie sicher, dass der Pfad korrekt ist
+import { fetchRecipes, toggleFavorite, deleteRecipe, addRecipe } from "./api"; // Stellen Sie sicher, dass der Pfad korrekt ist
 
 export const RecipesContext = createContext();
 
@@ -41,6 +41,15 @@ export const RecipesProvider = ({ children }) => {
       console.error("Failed to toggle favorite:", error);
     }
   };
+  // Neue Rezepte hinzufügen
+  const handleAddRecipe = async (recipeData) => {
+    try {
+      const newRecipe = await addRecipe(recipeData);
+      setRecipes([...recipes, newRecipe]);
+    } catch (error) {
+      console.error("Failed to add recipe:", error);
+    }
+  };
 
   return (
     <RecipesContext.Provider
@@ -49,8 +58,6 @@ export const RecipesProvider = ({ children }) => {
         handleAddRecipe,
         handleDeleteRecipe,
         handleToggleFavorite,
-        selectedRecipe,
-        getRecipeById,
       }}
     >
       {children}

@@ -1,22 +1,20 @@
 import React from "react";
 import { useState } from "react";
+import { useContext } from "react";
+import { RecipesContext } from "./RecipeContext";
 import { useNavigate } from "react-router-dom";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 function CreateRecipe() {
-  // State für das Rezeptformular
+  const { handleAddRecipe } = useContext(RecipesContext); // Verwende Context
   const [recipe, setRecipe] = useState({
     name: "",
     instructions: "",
-    cookingTime: 0,
-    calories: 0,
-    ingredients: [{ name: "", amount: 0, unit: "" }],
+    cookingTime: "",
+    calories: "",
+    ingredients: [{ name: "", amount: "", unit: "" }],
   });
-
-  // Hook für einen Erfolg nachricht zum spichern einen neuen Rezept
   const [message, setMessage] = useState("");
-
-  // Hook für die programmgesteuerte Navigation
   const navigate = useNavigate();
 
   // Handler für Änderungen in den Formularfeldern
@@ -46,20 +44,15 @@ function CreateRecipe() {
   };
 
   // Handler um das Rezept zu speichern
-  // hier bitte einmal ganz konkret anschauen ob die Funktion sinn macht
   const handleSave = async () => {
     try {
-      // Hier würde Logik zum Speichern des Rezepts gechrieben.
-
-      // Angenommen, das Speichern war erfolgreich:
+      await handleAddRecipe(recipe);
       setMessage("Das Rezept wurde erfolgreich gespeichert.");
-
-      // Nach einer kurze Verzögerung wird züruck zur Hauptseite navigiert.
       setTimeout(() => {
         navigate("/");
       }, 2000); // Warte 2 Sekunden, bevor navigieren.
     } catch (error) {
-      // Fehlerbehandlung
+      console.error("Fehler beim Speichern des Rezepts:", error);
       setMessage("Fehler beim Speichern des Rezepts.");
     }
   };
@@ -121,7 +114,6 @@ function CreateRecipe() {
             name="calories"
             value={recipe.calories}
             onChange={handleInputChange}
-            placeholder="kcal/100g"
           />
         </div>
       </div>
@@ -151,7 +143,6 @@ function CreateRecipe() {
               name="amount"
               value={ingredient.amount}
               onChange={(e) => handleIngredientChange(index, e)}
-              placeholder="Amount"
             />
           </div>
           <div className="col-md-4">

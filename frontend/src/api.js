@@ -49,3 +49,21 @@ export const deleteRecipe = async (id) => {
     throw error;
   }
 };
+
+// Neues Rezept erstellen
+export const addRecipe = async (recipeData) => {
+  try {
+    const response = await fetch(BASE_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(recipeData),
+    });
+    if (!response.ok) throw new Error("Network response was not ok.");
+    return await response.json();
+  } catch (error) {
+    console.error("Error adding recipe:", error);
+    throw error;
+  }
+};
