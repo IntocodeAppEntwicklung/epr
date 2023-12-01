@@ -67,3 +67,17 @@ export const addRecipe = async (recipeData) => {
     throw error;
   }
 };
+
+//Fetch Rezepte nach ID
+export const fetchRecipeById = async (id) => {
+  try {
+    const response = await fetch(`${BASE_URL}/${id}`);
+    if (!response.ok) {
+      throw new Error(`Network response was not ok: ${response.status}`);
+    }
+    return await response.json();
+  } catch (error) {
+    console.error("Error fetching recipe by ID:", error);
+    throw error;
+  }
+};

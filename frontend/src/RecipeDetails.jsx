@@ -1,31 +1,29 @@
-import React from "react";
+import React, { useContext, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import { RecipesContext } from "./RecipeContext";
 import { BsClock } from "react-icons/bs";
 import { Link } from "react-router-dom";
-// die beide würden für die einbindung mit dem backend gebraucht
-// import { useContext } from "react";
-// import { useParams } from "react-router-dom";
 
 const RecipeDetails = () => {
-  // Dummy-Daten, bitte mit der richtigen Funktion ersetzen
-  const recipe = {
-    title: "Chicken Stir Fry",
-    ingredients: [
-      { name: "Chicken breast", quantity: "400g" },
-      { name: "Broccoli", quantity: "1 head" },
-      { name: "Soy sauce", quantity: "3 tbsp" },
-    ],
-    instructions:
-      "Stir-fry chicken and vegetables. Add soy sauce, garlic, and ginger. Cook until done.",
-    time: "25 minutes",
-    calories: "150 kcal/100g",
-  };
+  const { recipeId } = useParams(); // Extrahiert die recipeId aus der URL
+  const { selectedRecipe, getRecipeById } = useContext(RecipesContext);
+
+  useEffect(() => {
+    if (recipeId) {
+      getRecipeById(recipeId);
+    }
+  }, [recipeId, getRecipeById]);
+
+  if (!selectedRecipe) {
+    return <p>Loading...</p>;
+  }
 
   return (
     <div className="container py-5">
-      <h1 className="display-4 mb-4">{recipe.title}</h1>
+      <h1 className="display-4 mb-4">{selectedRecipe.name}</h1>
       <h2 className="h5 mb-3">Ingredients</h2>
       <ul className="">
-        {recipe.ingredients.map((ingredient, index) => (
+        {selectedRecipe.ingredients.map((ingredient, index) => (
           <li key={index}>
             {ingredient.name}: {ingredient.quantity}
           </li>
@@ -33,14 +31,14 @@ const RecipeDetails = () => {
       </ul>
 
       <h2 className="h5 mb-3">Instructions</h2>
-      <p>{recipe.instructions}</p>
+      <p>{selectedRecipe.instructions}</p>
 
       <div className="d-flex justify-content-between align-items-center mt-4">
         <p>
           <BsClock className="me-2" />
-          {recipe.time}
+          {selectedRecipe.totalCookingTimeMinutes} min
         </p>
-        <p>{recipe.calories}</p>
+        <p>{selectedRecipe.calories100g}/100 kcal</p>
       </div>
 
       <Link to="/" className="btn btn-secondary mt-4">

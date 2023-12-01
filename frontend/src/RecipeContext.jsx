@@ -1,5 +1,11 @@
 import React, { createContext, useState, useEffect } from "react";
-import { fetchRecipes, toggleFavorite, deleteRecipe, addRecipe } from "./api"; // Stellen Sie sicher, dass der Pfad korrekt ist
+import {
+  fetchRecipes,
+  toggleFavorite,
+  deleteRecipe,
+  addRecipe,
+  fetchRecipeById,
+} from "./api";
 
 export const RecipesContext = createContext();
 
@@ -51,6 +57,16 @@ export const RecipesProvider = ({ children }) => {
     }
   };
 
+  // Funktion zum Abrufen eines Rezeptes nach ID
+  const getRecipeById = async (id) => {
+    try {
+      const recipe = await fetchRecipeById(id);
+      setSelectedRecipe(recipe);
+    } catch (error) {
+      console.error("Failed to fetch recipe by ID:", error);
+    }
+  };
+
   return (
     <RecipesContext.Provider
       value={{
@@ -58,6 +74,8 @@ export const RecipesProvider = ({ children }) => {
         handleAddRecipe,
         handleDeleteRecipe,
         handleToggleFavorite,
+        selectedRecipe,
+        getRecipeById,
       }}
     >
       {children}
